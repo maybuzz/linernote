@@ -1,0 +1,10 @@
+<div data-id="<%= artist.name %>" class="result-item">
+  <a class="result-link" href="/artist/<%= artist.id %>">
+    <% if (artist.images.length !== 0) { %>
+      <img class="result-img" src="<%= artist.images[0].url %>" alt="">
+    <% } else { %>
+      <img class="result-img" src="/img/placeholder.png" alt="placeholder">
+    <% } %>
+    <p class="result-name"><%= artist.name %></p>
+  </a>
+</div>

@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+  <% include partials/head.ejs %>
+
+<body>
+  <main class="search-main">
+    <div id="container">
+      <% include partials/search-bar.ejs %>
+
+      <% if(data.length !== 0) { %>
+        <% data.forEach((artist) => { %>
+          <% include partials/search-result.ejs %>
+        <% }) %>
+      <% } %>
+    </div>
+  </main>
+
+  <% include partials/main-nav.ejs %>
+
+</body>
+</html>

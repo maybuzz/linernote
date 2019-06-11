@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+
+<% include partials/head.ejs %>
+
+<body>
+  <header class="artist-header">
+    <ul class="artist-header-list">
+      <li><h1 class="artist-title"><%= data.name %></h1></li>
+      <li><a class="btn btn-follow" href="#">follow</a></li>
+      <li class="related-artists">
+        <h2 class="padding related-title">Fans also like</h2>
+        <% include partials/related.ejs %>
+      </li>
+    </ul>
+    <% include partials/artist-nav.ejs %>
+  </header>
+
+  <main class="artist-main">
+
+    <% include partials/artist-playlists.ejs %>
+
+    <% include partials/artist-ticketmaster.ejs %>
+
+    <% include partials/artist-soundcloud.ejs %>
+
+  </main>
+
+  <% include partials/main-nav.ejs %>
+
+</body>
+</html>

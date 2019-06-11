@@ -1,0 +1,17 @@
+<div id="albums" class="albums">
+  <h2 class="albums-title">Albums you will enjoy</h2>
+  <ul class="albums-list">
+    <% albums.forEach((album)=> { %>
+      <li class="albums-item">
+        <a class="album-link" href="#">
+          <img class="albums-item-img" src="<%= album.images[0].url %>">
+          <h4 class="albums-name"><%= album.name %></h4>
+          <!-- <p class="albums-followers"> album.artists[0].name</p> -->
+        </a>
+        <a class="btn btn-album" href="<%= album.external_urls.spotify %>">
+          luisteren
+        </a>
+      </li>
+    <% }) %>
+  </ul>
+</div>

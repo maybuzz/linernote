@@ -1,0 +1,5 @@
+<ul class="related-list">
+  <% related.artists.forEach((artist)=> { %>
+    <li class="related-item"><a href="/artist/<%= artist.id %>"><img class="related-item-img" src="<%= artist.images[0].url %>"><h4 class="related-item-name"><%= artist.name %></h4></a></li>
+  <% }) %>
+</ul>
