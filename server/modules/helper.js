@@ -16,5 +16,10 @@ function getData(url){
         .then(response=> response.json())
 }
 
-
-module.exports = {getDataWithToken, getData}
+function filterOutChar(string){
+    return string.trim()
+}
+function onlyUnique(value, index, self) { 
+    return self.indexOf(value) === index;
+}
+module.exports = {getDataWithToken, getData, filterOutChar, onlyUnique}

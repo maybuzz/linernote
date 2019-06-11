@@ -2,7 +2,10 @@ const express   = require('express')
 const router    = express.Router()
 const {getDataWithToken} = require('./helper')
 const {getData} = require('./helper')
+const {filterOutChar} = require('./helper')
+const {onlyUnique} = require('./helper')
 
+const puppeteer = require('puppeteer');
 router.get('/', (req,res)=>{
     res.render('login')
 })
@@ -54,10 +57,51 @@ router.get('/artist/:id', async (req, res) => {
         }
 
   const data = await getDataWithToken(config)
+  const events_url    = `https://app.ticketmaster.com/discovery/v2/attractions.json?keyword=${filterOutChar(data.name)}&countryCode=NL&apikey=${process.env.TICKETMASTER_CONSUMER_KEY}`
+  const events        = await getData(events_url)
+  
   const related = await getDataWithToken(config_related)
   const albums = await getDataWithToken(config_albums)
+  const filterOUt = events._embedded.attractions.filter(item=>item.name.trim().toLowerCase()===data.name.trim().toLowerCase())
+  req.session.artist = {
+    name: data.name,
+    youtube: filterOUt[0].externalLinks.youtube[0].url
+  }
+  // const url = filterOUt[0].externalLinks.youtube[0].url
 
-  res.render('artist', {data: data, related: related, albums: albums.items})
+  res.render('artist', {
+    data: data, 
+    related: related, 
+    albums: albums.items
+  })
 })
+
+router.get('/artist/:id/youtube', async (req,res)=>{
+  const scrape = await scrapeVideos(req.session.artist.youtube)
+  const urls =  scrape
+    .filter(onlyUnique)
+    .map(i=>i.split('watch?v=')[1])
+  res.render('youtube', {urls})
+})
+
+
+async function scrapeVideos(url){
+  const browser = await puppeteer.launch()
+  const page = await browser.newPage()
+  await page.goto(url)
+  const allA = await page.evaluate(()=>{
+    let elements = Array.from(document.querySelectorAll('a'))
+    let links = elements
+      .map(el=>el.href)
+      .filter(el=>el.includes("watch?"))
+      .filter(el=>!el.includes("list"))
+      // .filter(onlyUnique)
+
+    return links
+  })
+  await browser.close()
+  return allA
+}
+
 
 module.exports = router
