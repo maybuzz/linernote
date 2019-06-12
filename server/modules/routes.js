@@ -117,6 +117,27 @@ async function scrapeVideos(url){
   await browser.close()
   return allA
 }
+async function test(){
+  const iets = await scrapeVideos2('krezip')
+  console.log(iets)
+}
+test()
+async function scrapeVideos2(query){
+  const url = `https://www.youtube.com/results?search_query=${query}`
+  const browser = await puppeteer.launch()
+  const page = await browser.newPage()
+  await page.goto(url)
+  const allA = await page.evaluate(()=>{
+    let elements = Array.from(document.querySelectorAll('a'))
+    let links = elements
+      .map(el=>el.href)
+      .filter(el=>el.includes("watch?"))
+      .filter(el=>!el.includes("list"))
+    return links
+  })
+  await browser.close()
+  return allA
+}
 
 
 module.exports = router
