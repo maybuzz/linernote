@@ -137,18 +137,25 @@ svg > path{
 .search-bar {
   display: flex;
 }
+.search-bar .btn.btn-save{
+  border-radius: 0 40px 40px 0;
+}
 
 #search {
   font-size: 1rem;
+  outline: none;
   padding: .75rem;
-  padding-left: 2rem;
-  margin-right: .5rem;
+  padding-left: 1rem;
   width: 70%;
-  border-radius: 40px;
+  border-radius: 40px 0px 0 40px;
   border: none;
   display: block;
 }
-
+.search-bar .btn.btn-save,
+#search{
+  padding-top: .5rem;
+  padding-bottom: .5rem;
+}
 
 /* Search Results 
 ------------------------------ */
@@ -327,7 +334,7 @@ svg > path{
 /* Navigation 
 ------------------------------*/
 .navigation {
-  background: var(--second-bg-color);
+  /* background: var(--second-bg-color); */
   list-style: none;
   display: flex;
   padding: 0;
@@ -406,6 +413,12 @@ svg > path{
   justify-content: space-between;
   flex-direction: column;
   align-items: center;
+  transition: .25s;
+}
+.albums-item.highlight{
+  transform-origin: center;
+  transform: scale(1.1);
+  border: white solid 2px;
 }
 .albums-item:first-of-type {
   margin-left: 1rem;
