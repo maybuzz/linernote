@@ -418,7 +418,9 @@ svg > path{
 .albums-item.highlight{
   transform-origin: center;
   transform: scale(1.1);
-  border: white solid 2px;
+}
+.albums-item.highlight img{
+  border: white solid 4px;
 }
 .albums-item:first-of-type {
   margin-left: 1rem;
