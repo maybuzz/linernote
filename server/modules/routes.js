@@ -62,19 +62,34 @@ router.get('/artist/:id', async (req, res) => {
   
   const related = await getDataWithToken(config_related)
   const albums = await getDataWithToken(config_albums)
+  console.log('##############################events' ,events)
   const filterOUt = events._embedded.attractions.filter(item=>item.name.trim().toLowerCase()===data.name.trim().toLowerCase())
+  console.log(filterOUt)
+  // let youtube = filterOUt[0].externalLinks ? filterOUt[0].externalLinks.youtube[0].url : null 
+  // if(filterOUt[0].externalLinks){
+  //   filterOUt[0].externalLinks.youtube[0].url
+  // }else{
+  //   null
+  // }
   req.session.artist = {
     name: data.name,
-    youtube: filterOUt[0].externalLinks.youtube[0].url
+    youtube: 'iets' 
   }
-  // const url = filterOUt[0].externalLinks.youtube[0].url
-
+  // console.log(req.session.artist)
   res.render('artist', {
     data: data, 
     related: related, 
     albums: albums.items
   })
 })
+
+function arrayOrNot(someVar){
+  if( Object.prototype.toString.call( someVar ) === '[object Array]' ) {
+    return true
+  }else{   
+    return false
+  }
+}
 
 router.get('/artist/:id/youtube', async (req,res)=>{
   const scrape = await scrapeVideos(req.session.artist.youtube)
