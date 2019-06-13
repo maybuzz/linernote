@@ -63,9 +63,9 @@ router.get('/artist/:id', async (req, res) => {
   
   const related = await getDataWithToken(config_related)
   const albums = await getDataWithToken(config_albums)
-  console.log('##############################events' ,events)
-  const filterOUt = events._embedded.attractions.filter(item=>item.name.trim().toLowerCase()===data.name.trim().toLowerCase())
-  console.log(filterOUt)
+  // console.log('##############################events' ,events)
+  // const filterOUt = events._embedded.attractions.filter(item=>item.name.trim().toLowerCase()===data.name.trim().toLowerCase())
+  // console.log(filterOUt)
   // let youtube = filterOUt[0].externalLinks ? filterOUt[0].externalLinks.youtube[0].url : null 
   // if(filterOUt[0].externalLinks){
   //   filterOUt[0].externalLinks.youtube[0].url
@@ -96,9 +96,13 @@ router.get('/artist/:id/youtube', async (req,res)=>{
   // const scrape = await scrapeVideos(req.session.artist.youtube)
   const yt = new Youtube()
   yt.setKey("AIzaSyBeiiNR-feYHP2uC90LKZWVFlGx7IQ9ztE")
-  yt.search("anouk",1,(err,response) => {
+  yt.search("Anouk",10,(err,response) => {
     console.log(response)
-    res.send(response)
+    const data = response.items
+      .filter(i=>i.id.videoId)
+      .map(i=>i.id.videoId)
+    console.log(data)
+    res.render('youtube', {data})
   });
 
   // const urls =  scrape
