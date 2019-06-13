@@ -1,9 +1,10 @@
-const express   = require('express')
-const router    = express.Router()
-const {getDataWithToken} = require('./helper')
-const {getData} = require('./helper')
-const {filterOutChar} = require('./helper')
-const {onlyUnique} = require('./helper')
+const express             = require('express')
+const Youtube                  = require('youtube-node')
+const router              = express.Router()
+const {getDataWithToken}  = require('./helper')
+const {getData}           = require('./helper')
+const {filterOutChar}     = require('./helper')
+const {onlyUnique}        = require('./helper')
 
 const puppeteer = require('puppeteer');
 router.get('/', (req,res)=>{
@@ -92,12 +93,21 @@ function arrayOrNot(someVar){
 }
 
 router.get('/artist/:id/youtube', async (req,res)=>{
-  const scrape = await scrapeVideos(req.session.artist.youtube)
-  const urls =  scrape
-    .filter(onlyUnique)
-    .map(i=>i.split('watch?v=')[1])
-  res.render('youtube', {urls})
+  // const scrape = await scrapeVideos(req.session.artist.youtube)
+  const yt = new Youtube()
+  yt.setKey("AIzaSyBeiiNR-feYHP2uC90LKZWVFlGx7IQ9ztE")
+  yt.search("anouk",1,(err,response) => {
+    console.log(response)
+    res.send(response)
+  });
+
+  // const urls =  scrape
+  //   .filter(onlyUnique)
+  //   .map(i=>i.split('watch?v=')[1])
 })
+
+
+
 
 
 async function scrapeVideos(url){
@@ -117,11 +127,16 @@ async function scrapeVideos(url){
   await browser.close()
   return allA
 }
+
+
+
 async function test(){
   const iets = await scrapeVideos2('krezip')
-  console.log(iets)
 }
-test()
+
+
+
+
 async function scrapeVideos2(query){
   const url = `https://www.youtube.com/results?search_query=${query}`
   const browser = await puppeteer.launch()
