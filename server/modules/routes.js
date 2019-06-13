@@ -67,8 +67,8 @@ router.get('/artist/:id', async (req, res) => {
   const filterOUt = events._embedded.attractions.filter(item=>item.name.trim().toLowerCase()===data.name.trim().toLowerCase())
 
   const ticketResults = filterOUt[0] ? filterOUt[0] : filterOUt
-  let externalLinks = ticketResults.externalLinks ? ticketResults.externalLinks : "no external links"
-        
+  let externalLinks = ticketResults.externalLinks ? ticketResults.externalLinks : await getRelatedLinks(data.name)
+  console.log(externalLinks)        
 
   // NOTE: ER IS EEN NIEUWE EN MAKKELIJKERE MANIER OM DATA UIT YOUTUBE TE HALEN BEKIJK DE CODE IN DE ROUTER >>>'/artist/:id/youtube'
   req.session.artist = {
@@ -93,21 +93,21 @@ function arrayOrNot(someVar){
 
 router.get('/artist/:id/youtube', async (req,res)=>{
   // const scrape = await scrapeVideos(req.session.artist.youtube)
-  // const yt = new Youtube()
-  // yt.setKey("AIzaSyBeiiNR-feYHP2uC90LKZWVFlGx7IQ9ztE")
-  // yt.search("Anouk",10,(err,response) => {
-  //   console.log(response)
-  //   const data = response.items
-  //     .filter(i=>i.id.videoId)
-  //     .map(i=>i.id.videoId)
-  //   console.log(data)
-  //   res.render('youtube', {data})
-  // });
-  const name = 'Michael Jackson'
+  const yt = new Youtube()
+  yt.setKey("AIzaSyBeiiNR-feYHP2uC90LKZWVFlGx7IQ9ztE")
+  yt.search("Anouk",10,(err,response) => {
+    console.log(response)
+    const data = response.items
+      .filter(i=>i.id.videoId)
+      .map(i=>i.id.videoId)
+    console.log(data)
+    res.render('youtube', {data})
+  });
+
   // const data = await findArtistId(name)
   // const getSpecifik = data.artists
   //   .filter(d=>d.name === name)
-  const test = await getRelatedLinks('Michael Jackson')
+  // const test = await getRelatedLinks('Michael Jackson')
   res.send(test)
   // const urls =  scrape
   //   .filter(onlyUnique)
