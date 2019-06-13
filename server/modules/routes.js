@@ -41,7 +41,7 @@ router.get('/artist', async (req, res) => {
 router.get('/artist/:id', async (req, res) => {
   const searchVal = req.params.id
   const acces_token = req.session.acces_token
-  console.log(acces_token);
+  // console.log(acces_token);
   const config = {
             url: `https://api.spotify.com/v1/artists/${searchVal}`,
             acces_token
@@ -67,9 +67,13 @@ router.get('/artist/:id', async (req, res) => {
   const filterOUt = events._embedded.attractions.filter(item=>item.name.trim().toLowerCase()===data.name.trim().toLowerCase())
 
   const ticketResults = filterOUt[0] ? filterOUt[0] : filterOUt
-  let externalLinks = ticketResults.externalLinks ? ticketResults.externalLinks : await getRelatedLinks(data.name)
-  console.log(externalLinks)        
+  let externalLinks = ticketResults.externalLinks ? ticketResults.externalLinks : null
+  const musicbrainzIdCheck = !externalLinks ? await findArtistId(data.name) : externalLinks 
 
+  const musicbrainzId = musicbrainzIdCheck.musicbrainz ? musicbrainzIdCheck.musicbrainz[0].id : musicbrainzIdCheck.artists[0].id
+  const musicbrainzLinks = await getRelatedLinks(musicbrainzId)         
+  console.log(musicbrainzLinks)
+  
   // NOTE: ER IS EEN NIEUWE EN MAKKELIJKERE MANIER OM DATA UIT YOUTUBE TE HALEN BEKIJK DE CODE IN DE ROUTER >>>'/artist/:id/youtube'
   req.session.artist = {
     name: data.name,
@@ -95,8 +99,7 @@ router.get('/artist/:id/youtube', async (req,res)=>{
   // const scrape = await scrapeVideos(req.session.artist.youtube)
   const yt = new Youtube()
   yt.setKey("AIzaSyBeiiNR-feYHP2uC90LKZWVFlGx7IQ9ztE")
-  yt.search("Anouk",10,(err,response) => {
-    console.log(response)
+  yt.search(req.session.artist.name,10,(err,response) => {
     const data = response.items
       .filter(i=>i.id.videoId)
       .map(i=>i.id.videoId)
@@ -108,7 +111,7 @@ router.get('/artist/:id/youtube', async (req,res)=>{
   // const getSpecifik = data.artists
   //   .filter(d=>d.name === name)
   // const test = await getRelatedLinks('Michael Jackson')
-  res.send(test)
+  // res.send(test)
   // const urls =  scrape
   //   .filter(onlyUnique)
   //   .map(i=>i.split('watch?v=')[1])
