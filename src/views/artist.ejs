@@ -5,17 +5,36 @@
 
 <body>
   <header class="artist-header">
+    <i class="fas fa-chevron-left"></i>
+    <div class="artist-profile-image">
+      <div 
+        class="image-container"
+        style=" background:
+                linear-gradient(
+                rgba(0, 0, 0, 0.45), 
+                rgba(0, 0, 0, 0.45)
+                ),
+                  url(<%=data.images[0].url%>);
+                background-size: cover;
+        "
+      >
+      </div>
+      <div class="info">
+        <h1 class="artist-title"><%= data.name %></h1>
+        <a class="btn btn-follow" href="#">follow</a>
+      </div>
+      <div class="bottom-shadow"></div>
+    </div>
+  </header>
+  <section>
     <ul class="artist-header-list">
-      <li><h1 class="artist-title"><%= data.name %></h1></li>
-      <li><a class="btn btn-follow" href="#">follow</a></li>
       <li class="related-artists">
         <h2 class="padding related-title">Fans also like</h2>
         <% include partials/related.ejs %>
       </li>
     </ul>
     <% include partials/artist-nav.ejs %>
-  </header>
-
+  </section>
   <main class="artist-main">
 
     <% include partials/artist-playlists.ejs %>
@@ -27,6 +46,6 @@
   </main>
 
   <% include partials/main-nav.ejs %>
-
+  <script src="/js/script.js"></script>
 </body>
 </html>
