@@ -65,9 +65,11 @@ router.get('/artist/:id', async (req, res) => {
   const filterOUt = events._embedded.attractions.filter(item=>item.name.trim().toLowerCase()===data.name.trim().toLowerCase())
 //   console.log(filterOUt)
   const attraction = filterOUt[0] ? filterOUt[0] : filterOUt
+  console.log(attraction)
   const externalLinks = attraction.externalLinks ? attraction.externalLinks : 'property is er niet'
   if(externalLinks === 'property is er niet')   console.log("#############################Attractions#####################",attraction)
-  console.log("#############################External Links#####################", externalLinks)
+  console.log("#############################External Links############################")
+  console.log(externalLinks)
   req.session.artist = {
     name: data.name,
     // youtube: filterOUt[0].externalLinks.youtube[0].url
