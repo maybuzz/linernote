@@ -6,6 +6,7 @@ const {getData}               = require('./helper')
 const {filterOutChar}         = require('./helper')
 const {onlyUnique}            = require('./helper')
 const {removeALlSpaces}       = require('./helper')
+const fetch                   = require('node-fetch')
 let tempArray                 = null
 const puppeteer = require('puppeteer');
 router.get('/', (req,res)=>{
@@ -147,6 +148,33 @@ router.get('/artist/:id/soundcloud', async (req,res)=>{
   })
 })
 
+router.get('/artist/:id/instagram', (req,res)=>{
+  // console.log(tempArray)
+  tempArray.forEach(async (item)=>{
+    // console.log(item)
+    // console.log(Object.keys(item))
+    if(Object.keys(item)[0]==='socialnetwork'){
+      // console.log(item)
+      const url = item.socialnetwork
+        .filter(i=>i.url.resource.includes('instagram'))
+        .map(x=>x.url.resource)[0]
+      const links = await instaScraper(url)
+      // links.forEach(async (link)=>{
+      //   const api = await fetch(`https://api.instagram.com/oembed/?url=${link}`)
+      //   const json = await api.json()
+      //   console.log(json)
+      // }) 
+      const getEmbed = links.map(async(link)=>{
+        const api = await fetch(`https://api.instagram.com/oembed/?url=${link}`)
+        const json = await api.json()
+        return json.html
+      })
+      const embeds = await Promise.all(getEmbed) 
+      res.render('artist-media-partials/instagram', {embeds})
+    }
+  })
+})
+
 
 
 // findArtistId('Michael Jackson')
@@ -190,6 +218,22 @@ async function scrapeVideos(url){
 
     return links
   })
+  await browser.close()
+  return allA
+}
+
+async function instaScraper(url){
+  const browser = await puppeteer.launch()
+  const page = await browser.newPage()
+  await page.goto(url)
+  const allA = await page.evaluate(()=>{
+    let elements = Array.from(document.querySelectorAll('article a'))
+    let links = elements
+      .map(el=>el.href)
+
+    return links
+  })
+  console.log(allA)
   await browser.close()
   return allA
 }

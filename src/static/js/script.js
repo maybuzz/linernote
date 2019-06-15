@@ -16,7 +16,8 @@ function init(){
             if(document.querySelector('main')){
                 document.body.removeChild(document.body.querySelector('main'))
                 document.body.insertAdjacentHTML('beforeend', body)
-                if(this.href.includes('soundcloud'))     soundCloudSDK()
+                if(this.href.includes('instagram'))   instaIframe()
+                if(this.href.includes('soundcloud'))  soundCloudSDK()
             }else{
                 document.body.insertAdjacentHTML('beforeend', body)
             }
@@ -25,12 +26,15 @@ function init(){
  
 function soundCloudSDK(){
     const el = document.getElementById('putTheWidgetHere')
-    console.log(el.getAttribute('data'))
-    SC.oEmbed('<%=url%>', {
+    const url = el.getAttribute('data-url')
+    SC.oEmbed(url, {
         element: document.getElementById('putTheWidgetHere')
     });
 }
-
+function instaIframe(){
+    console.log('processing')
+    instgrm.Embeds.process()
+}
 
  function reformAlbumTitle(){
     const allAlbumTitle = Array.from(document.querySelectorAll('.albums-item h4.albums-name'))
