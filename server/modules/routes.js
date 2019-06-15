@@ -1,11 +1,12 @@
-const express             = require('express')
-const Youtube                  = require('youtube-node')
-const router              = express.Router()
-const {getDataWithToken}  = require('./helper')
-const {getData}           = require('./helper')
-const {filterOutChar}     = require('./helper')
-const {onlyUnique}        = require('./helper')
-
+const express                 = require('express')
+const Youtube                 = require('youtube-node')
+const router                  = express.Router()
+const {getDataWithToken}      = require('./helper')
+const {getData}               = require('./helper')
+const {filterOutChar}         = require('./helper')
+const {onlyUnique}            = require('./helper')
+const {removeALlSpaces}       = require('./helper')
+let tempArray                 = null
 const puppeteer = require('puppeteer');
 router.get('/', (req,res)=>{
     res.render('login')
@@ -66,14 +67,39 @@ router.get('/artist/:id', async (req, res) => {
   
   const filterOUt = events._embedded.attractions.filter(item=>item.name.trim().toLowerCase()===data.name.trim().toLowerCase())
 
-  const ticketResults = filterOUt[0] ? filterOUt[0] : filterOUt
-  let externalLinks = ticketResults.externalLinks ? ticketResults.externalLinks : null
-  const musicbrainzIdCheck = !externalLinks ? await findArtistId(data.name) : externalLinks 
-
-  const musicbrainzId = musicbrainzIdCheck.musicbrainz ? musicbrainzIdCheck.musicbrainz[0].id : musicbrainzIdCheck.artists[0].id
-  const musicbrainzLinks = await getRelatedLinks(musicbrainzId)         
-  console.log(musicbrainzLinks)
+  //  VERSION 1 get musicbrainz data via ticketmaster results
+  // const ticketResults = filterOUt[0] ? filterOUt[0] : filterOUt
+  // const externalLinks = ticketResults.externalLinks ? ticketResults.externalLinks : null
+  // const musicbrainzIdCheck = !externalLinks ? await findArtistId(data.name) : externalLinks 
+  // const musicbrainzId = musicbrainzIdCheck.musicbrainz ? musicbrainzIdCheck.musicbrainz[0].id : musicbrainzIdCheck.artists[0].id
+  // const musicbrainzLinks = await getRelatedLinks(musicbrainzId)
   
+  // console.log(data.name)
+  const musicbrainzId = await findArtistId(data.name)
+  // console.log(musicbrainzId)
+  const relatedMedia  = await getRelatedLinks(musicbrainzId.artists[0].id)
+  // console.log(relatedMedia)
+  
+  const uniqueTypes = [...new Set(relatedMedia.map(item => item.type))];
+  const typesArray = uniqueTypes
+        .map(type=>{
+          return {
+              [removeALlSpaces(type)]:[]
+            }
+        })
+  typesArray.forEach(type=>{
+    relatedMedia.forEach(media=>{
+      if(removeALlSpaces(media.type) === Object.keys(type)[0]){
+        // console.log(type) 
+        type[Object.keys(type)[0]].push(media)
+        // typesArray.push(type)
+        // console.log('pushing')
+      }
+    })
+    // console.log(Object.keys(type)[0])
+  })
+  tempArray = typesArray
+  // res.send(typesArray)
   // NOTE: ER IS EEN NIEUWE EN MAKKELIJKERE MANIER OM DATA UIT YOUTUBE TE HALEN BEKIJK DE CODE IN DE ROUTER >>>'/artist/:id/youtube'
   req.session.artist = {
     name: data.name,
@@ -103,18 +129,22 @@ router.get('/artist/:id/youtube', async (req,res)=>{
     const data = response.items
       .filter(i=>i.id.videoId)
       .map(i=>i.id.videoId)
-    console.log(data)
-    res.render('youtube', {data})
+    // console.log(data)
+    res.render('artist-media-partials/youtube', {data})
   });
+})
 
-  // const data = await findArtistId(name)
-  // const getSpecifik = data.artists
-  //   .filter(d=>d.name === name)
-  // const test = await getRelatedLinks('Michael Jackson')
-  // res.send(test)
-  // const urls =  scrape
-  //   .filter(onlyUnique)
-  //   .map(i=>i.split('watch?v=')[1])
+
+router.get('/artist/:id/soundcloud', async (req,res)=>{
+  console.log(tempArray)
+  tempArray.forEach(item=>{
+    // console.log(item)
+    // console.log(Object.keys(item))
+    if(Object.keys(item)[0]==='soundcloud'){
+      const url = item[Object.keys(item)[0]][0].url.resource
+      res.render('artist-media-partials/soundcloud', {url})
+    }
+  })
 })
 
 
@@ -122,6 +152,7 @@ router.get('/artist/:id/youtube', async (req,res)=>{
 // findArtistId('Michael Jackson')
 // Info from musicBrainnnzzzz
 async function findArtistId(artist){
+  // console.log(artist)
   const url = `http://musicbrainz.org/ws/2/artist/?query=artist:${artist}&fmt=json`
   const data = await getData(url)
   return data
@@ -134,11 +165,12 @@ async function musicBrainzAPI(id){
   return data
 }
 
-async function getRelatedLinks(artist){
-  const artistId = await findArtistId(artist)
-  const getSpecifik = artistId.artists
-    .filter(d=>d.name === artist)
-  const id = getSpecifik[0].id
+async function getRelatedLinks(id){
+  // const artistId = await findArtistId(artist)
+  // console.log(artistId)
+  // const getSpecifik = artistId.artists
+  //   .filter(d=>d.name === artist)
+  // const id = getSpecifik[0].id
   const getLinks = await musicBrainzAPI(id)
   return getLinks.relations
 }

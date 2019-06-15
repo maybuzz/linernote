@@ -22,4 +22,8 @@ function filterOutChar(string){
 function onlyUnique(value, index, self) { 
     return self.indexOf(value) === index;
 }
-module.exports = {getDataWithToken, getData, filterOutChar, onlyUnique}
+function removeALlSpaces(str){
+    // return str.replace(/\s+/g, '');
+    return str.replace(/\W/g, '')
+}
+module.exports = {getDataWithToken, getData, filterOutChar, onlyUnique,removeALlSpaces}
