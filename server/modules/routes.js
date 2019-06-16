@@ -62,20 +62,12 @@ router.get('/artist/:id', async (req, res) => {
   const data = await getDataWithToken(config)
   const events_url    = `https://app.ticketmaster.com/discovery/v2/attractions.json?keyword=${filterOutChar(data.name)}&countryCode=NL&apikey=${process.env.TICKETMASTER_CONSUMER_KEY}`
   const events        = await getData(events_url)
-  
   const related = await getDataWithToken(config_related)
   const albums = await getDataWithToken(config_albums)
   
   const filterOUt = events._embedded.attractions.filter(item=>item.name.trim().toLowerCase()===data.name.trim().toLowerCase())
-
-  //  VERSION 1 get musicbrainz data via ticketmaster results
-  // const ticketResults = filterOUt[0] ? filterOUt[0] : filterOUt
-  // const externalLinks = ticketResults.externalLinks ? ticketResults.externalLinks : null
-  // const musicbrainzIdCheck = !externalLinks ? await findArtistId(data.name) : externalLinks 
-  // const musicbrainzId = musicbrainzIdCheck.musicbrainz ? musicbrainzIdCheck.musicbrainz[0].id : musicbrainzIdCheck.artists[0].id
-  // const musicbrainzLinks = await getRelatedLinks(musicbrainzId)
-  
-  // console.log(data.name)
+  const ticketResults = filterOUt[0] ? filterOUt[0] : filterOUt
+  console.log(ticketResults)
   const musicbrainzId = await findArtistId(data.name)
   // console.log(musicbrainzId)
   const relatedMedia  = await getRelatedLinks(musicbrainzId.artists[0].id)
@@ -100,6 +92,7 @@ router.get('/artist/:id', async (req, res) => {
     // console.log(Object.keys(type)[0])
   })
   tempArray = typesArray
+  console.log(tempArray)
   // res.send(typesArray)
   // NOTE: ER IS EEN NIEUWE EN MAKKELIJKERE MANIER OM DATA UIT YOUTUBE TE HALEN BEKIJK DE CODE IN DE ROUTER >>>'/artist/:id/youtube'
   req.session.artist = {
@@ -237,14 +230,6 @@ async function instaScraper(url){
   await browser.close()
   return allA
 }
-
-
-
-async function test(){
-  const iets = await scrapeVideos2('krezip')
-}
-
-
 
 
 async function scrapeVideos2(query){
