@@ -75,7 +75,7 @@ router.get('/artist/:id', async (req, res) => {
 
   const filterOUt = events._embedded.attractions.filter(item=>item.name.trim().toLowerCase()===data.name.trim().toLowerCase())
   const ticketResults = filterOUt[0] ? filterOUt[0] : filterOUt
-  console.log(ticketResults)
+  // console.log(ticketResults)
   const musicbrainzId = await findArtistId(data.name)
   // console.log(musicbrainzId)
   const relatedMedia  = await getRelatedLinks(musicbrainzId.artists[0].id)
@@ -100,8 +100,22 @@ router.get('/artist/:id', async (req, res) => {
     // console.log(Object.keys(type)[0])
   })
   tempArray = typesArray
-  console.log(tempArray)
-  // res.send(topTracks)
+  
+  const wikiUrl1 = typesArray
+  .filter(t=>Object.keys(t)[0]==='wikipedia')
+  const wikiUrl2 = await (await fetch(`https://en.wikipedia.org/api/rest_v1/page/summary/${data.name}`)).json()
+  let wikiData = null
+  console.log(wikiUrl1.length)
+  if(wikiUrl1.length===0){
+    wikiData = wikiUrl2.extract
+  }else{
+    const url = wikiUrl1[0].wikipedia[0].url.resource.split('https://en.wikipedia.org/wiki/')[1]
+    wikiData =  await (await fetch(`https://en.wikipedia.org/api/rest_v1/page/summary/${url}`)).json()
+    wikiData = wikiData.extract
+  }
+  // res.send(wikiData)
+  // const wikiDataUrl = wikiUrl1[0].wikipedia[0].url.resource ? wikiUrl1 : wikiUrl2 
+  console.log(wikiData) 
   // NOTE: ER IS EEN NIEUWE EN MAKKELIJKERE MANIER OM DATA UIT YOUTUBE TE HALEN BEKIJK DE CODE IN DE ROUTER >>>'/artist/:id/youtube'
   req.session.artist = {
     name: data.name,
@@ -112,7 +126,8 @@ router.get('/artist/:id', async (req, res) => {
     data: data, 
     related: related, 
     albums: albums.items,
-    topTracks: topTracks.tracks 
+    topTracks: topTracks.tracks,
+    wikiData 
   })
 })
 
