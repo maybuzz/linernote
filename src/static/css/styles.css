@@ -209,7 +209,7 @@ svg > path{
   position: absolute;
   left: 5%;
   top: 5%;
-  z-index: 1000;
+  z-index: 5000000;
   color: white;
 }
 .artist-header-img {
@@ -426,8 +426,8 @@ svg > path{
 }
 
 .related-item-img {
-  height: 4.5rem;
-  width: 4.5rem;
+  height: 5.8rem;
+  width: 5.8rem;
   border-radius: 100px;
   border: solid 1px var(--color-btn);
   margin-right: .5rem;
