@@ -19,6 +19,22 @@
         "
       >
       </div>
+      <div class="top-tracks-container">
+        <h2>Populair Tracks</h2>
+        <ul>
+          <% topTracks.forEach((tp)=>{ %>
+            <li>
+              <%=tp.name%>
+              <div class="moreInfo">
+                <i class="fas fa-circle"></i>
+                <i class="fas fa-circle"></i>
+                <i class="fas fa-circle"></i>
+              </div>
+            </li>
+          <% }) %> 
+          
+        </ul>
+      </div>
       <div class="info">
         <h1 class="artist-title"><%= data.name %></h1>
         <a class="btn btn-follow" href="#">follow</a>

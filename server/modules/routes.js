@@ -101,19 +101,19 @@ router.get('/artist/:id', async (req, res) => {
   })
   tempArray = typesArray
   console.log(tempArray)
-  // res.send(topTracks)
+  res.send(topTracks)
   // NOTE: ER IS EEN NIEUWE EN MAKKELIJKERE MANIER OM DATA UIT YOUTUBE TE HALEN BEKIJK DE CODE IN DE ROUTER >>>'/artist/:id/youtube'
   req.session.artist = {
     name: data.name,
     youtube: 'iets' 
   }
   // console.log(req.session.artist)
-  res.render('artist', {
-    data: data, 
-    related: related, 
-    albums: albums.items,
-    topTracks 
-  })
+  // res.render('artist', {
+  //   data: data, 
+  //   related: related, 
+  //   albums: albums.items,
+  //   topTracks: topTracks 
+  // })
 })
 
 function arrayOrNot(someVar){
