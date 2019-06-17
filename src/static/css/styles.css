@@ -280,7 +280,7 @@ svg > path{
   justify-content: center;
   align-items: center;
   flex-direction: column;
-  bottom: 0%;
+  bottom: 15%;
   z-index: 1000;
 }
 .artist-header .bottom-shadow{
@@ -314,7 +314,41 @@ svg > path{
 .artist-header nav.header i{
   margin: 2px;
   font-size: 12px;
+  opacity: .1;
+  transition: .25s;
 }
+
+.artist-header nav.header i.visible{
+  opacity: 1;
+}
+.click-left-overlay{
+  width: 20%;
+  height: 100%;
+  position: absolute;
+  top:0;
+  left:0;
+  z-index: 1000000;
+}
+.click-right-overlay{
+  width: 20%;
+  z-index: 1000000;
+  height: 100%;
+  position: absolute;
+  top:0;
+  right:0;
+}
+.header-section{
+  z-index: 1;
+  opacity: 0;
+  transition: .25s;
+}
+.header-section.visible{
+  z-index: 1000;
+  opacity: 1;
+}
+
+
+
 /* End Header */
 
 

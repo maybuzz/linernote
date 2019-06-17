@@ -6,6 +6,8 @@
 <body>
   <header class="artist-header">
     <i class="fas fa-chevron-left"></i>
+    <div class="click-left-overlay"></div>
+    <div class="click-right-overlay"></div>
     <div class="artist-profile-image">
       <div 
         class="image-container"
@@ -19,7 +21,11 @@
         "
       >
       </div>
-      <div class="top-tracks-container">
+      <div class="header-section info">
+        <h1 class="artist-title"><%= data.name %></h1>
+        <a class="btn btn-follow" href="#">follow</a>
+      </div>
+      <div class="header-section top-tracks-container">
         <h2>Populair Tracks</h2>
         <ul>
           <% topTracks.forEach((tp,index)=>{ %>
@@ -36,10 +42,6 @@
           
         </ul>
       </div>
-      <!-- <div class="info">
-        <h1 class="artist-title"><%= data.name %></h1>
-        <a class="btn btn-follow" href="#">follow</a>
-      </div> -->
       <nav class="header">
         <i class="fas fa-circle"></i>
         <i class="fas fa-circle"></i>

@@ -1,28 +1,57 @@
+let headerIndex = 0;
+
+
 function init(){
     reformAlbumTitle()
     document.querySelector('.albums-list').addEventListener('scroll', albumScrollCheck)
     albumScrollCheck()
     document.querySelectorAll('.navigation a').forEach(anchor=>anchor.addEventListener('click', activateLink))
- }
+    setHeaderPage()
+    document.querySelector('.click-left-overlay').addEventListener('click', switchHeaderPage)
+    document.querySelector('.click-right-overlay').addEventListener('click', switchHeaderPage)
+}
  
- 
- function activateLink(){
-    event.preventDefault()
-    // fetch(a.href)
-    console.log(this.href)
-    fetch(this.href)
-        .then(html=>html.text())
-        .then(body=>{
-            if(document.querySelector('main')){
-                document.body.removeChild(document.body.querySelector('main'))
-                document.body.insertAdjacentHTML('beforeend', body)
-                if(this.href.includes('instagram'))   instaIframe()
-                if(this.href.includes('soundcloud'))  soundCloudSDK()
-            }else{
-                document.body.insertAdjacentHTML('beforeend', body)
-            }
-        })
- }
+
+function switchHeaderPage(){
+    console.log(this)
+    if(this.classList[0].includes('right')){
+        if(headerIndex===2) return
+        headerIndex++
+        setHeaderPage()
+    }else{
+        if(headerIndex===0) return
+        headerIndex--
+        setHeaderPage()
+    }
+}
+function setHeaderPage(){
+    const activeI = Array.from(document.querySelectorAll('nav.header i'))
+    const headerPages = Array.from(document.querySelectorAll('.header-section'))
+    headerPages.forEach(p=>p.classList.remove('visible'))
+    headerPages[headerIndex].classList.add('visible')
+
+    activeI.forEach(p=>p.classList.remove('visible'))
+    activeI[headerIndex].classList.add('visible')
+}
+
+
+function activateLink(){
+event.preventDefault()
+// fetch(a.href)
+console.log(this.href)
+fetch(this.href)
+    .then(html=>html.text())
+    .then(body=>{
+        if(document.querySelector('main')){
+            document.body.removeChild(document.body.querySelector('main'))
+            document.body.insertAdjacentHTML('beforeend', body)
+            if(this.href.includes('instagram'))   instaIframe()
+            if(this.href.includes('soundcloud'))  soundCloudSDK()
+        }else{
+            document.body.insertAdjacentHTML('beforeend', body)
+        }
+    })
+}
  
 function soundCloudSDK(){
     const el = document.getElementById('putTheWidgetHere')
