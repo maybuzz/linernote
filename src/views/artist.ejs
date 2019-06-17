@@ -22,9 +22,10 @@
       <div class="top-tracks-container">
         <h2>Populair Tracks</h2>
         <ul>
-          <% topTracks.forEach((tp)=>{ %>
+          <% topTracks.forEach((tp,index)=>{ %>
             <li>
-              <%=tp.name%>
+              <p class="index"><%=index+1%>.</p>
+              <p class="song"><%=tp.name%></p>
               <div class="moreInfo">
                 <i class="fas fa-circle"></i>
                 <i class="fas fa-circle"></i>
@@ -35,15 +36,15 @@
           
         </ul>
       </div>
-      <div class="info">
+      <!-- <div class="info">
         <h1 class="artist-title"><%= data.name %></h1>
         <a class="btn btn-follow" href="#">follow</a>
-        <nav class="header">
-          <i class="fas fa-circle"></i>
-          <i class="fas fa-circle"></i>
-          <i class="fas fa-circle"></i>
-        </nav>
-      </div>
+      </div> -->
+      <nav class="header">
+        <i class="fas fa-circle"></i>
+        <i class="fas fa-circle"></i>
+        <i class="fas fa-circle"></i>
+      </nav>
       <div class="bottom-shadow"></div>
     </div>
   </header>
