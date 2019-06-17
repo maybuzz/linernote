@@ -45,26 +45,34 @@ router.get('/artist/:id', async (req, res) => {
   const acces_token = req.session.acces_token
   // console.log(acces_token);
   const config = {
-            url: `https://api.spotify.com/v1/artists/${searchVal}`,
-            acces_token
-        }
+    url: `https://api.spotify.com/v1/artists/${searchVal}`,
+    acces_token
+  }
+  const data = await getDataWithToken(config)
 
   const config_related = {
-              url: `https://api.spotify.com/v1/artists/${searchVal}/related-artists`,
-              acces_token
-        }
-
+    url: `https://api.spotify.com/v1/artists/${searchVal}/related-artists`,
+    acces_token
+  }
+        
   const config_albums = {
-              url: `https://api.spotify.com/v1/artists/${searchVal}/albums?include_groups=album`,
-              acces_token
-        }
+    url: `https://api.spotify.com/v1/artists/${searchVal}/albums?include_groups=album`,
+    acces_token
+  }
+  const config_topTracks = {
+    url: `https://api.spotify.com/v1/artists/${data.id}/top-tracks?country=NL`,
+    acces_token
+  }
 
-  const data = await getDataWithToken(config)
   const events_url    = `https://app.ticketmaster.com/discovery/v2/attractions.json?keyword=${filterOutChar(data.name)}&countryCode=NL&apikey=${process.env.TICKETMASTER_CONSUMER_KEY}`
   const events        = await getData(events_url)
   const related = await getDataWithToken(config_related)
   const albums = await getDataWithToken(config_albums)
-  
+  const topTracks = await getDataWithToken(config_topTracks)
+
+
+
+
   const filterOUt = events._embedded.attractions.filter(item=>item.name.trim().toLowerCase()===data.name.trim().toLowerCase())
   const ticketResults = filterOUt[0] ? filterOUt[0] : filterOUt
   console.log(ticketResults)
@@ -93,7 +101,7 @@ router.get('/artist/:id', async (req, res) => {
   })
   tempArray = typesArray
   console.log(tempArray)
-  // res.send(typesArray)
+  // res.send(topTracks)
   // NOTE: ER IS EEN NIEUWE EN MAKKELIJKERE MANIER OM DATA UIT YOUTUBE TE HALEN BEKIJK DE CODE IN DE ROUTER >>>'/artist/:id/youtube'
   req.session.artist = {
     name: data.name,
@@ -103,7 +111,8 @@ router.get('/artist/:id', async (req, res) => {
   res.render('artist', {
     data: data, 
     related: related, 
-    albums: albums.items
+    albums: albums.items,
+    topTracks 
   })
 })
 

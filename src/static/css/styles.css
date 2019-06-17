@@ -204,7 +204,7 @@ svg > path{
   height: 50vh;
   position: relative;
 }
-.artist-header i{
+.artist-header i.fas.fa-chevron-left{
   font-size: 25px;
   position: absolute;
   left: 5%;
@@ -236,14 +236,14 @@ svg > path{
   justify-content: center;
   align-items: center;
   flex-direction: column;
-  bottom: 15%;
+  bottom: 0%;
   z-index: 1000;
 }
 .artist-header .bottom-shadow{
   background-image: linear-gradient(transparent, var(--main-bg-color));
   width: 100%;
   position: absolute;
-  height: 25%;
+  height: 70%;
   bottom: 0; 
 }
 .artist-header-list {
@@ -256,6 +256,12 @@ svg > path{
   text-align: center;
   margin: 0 2.5rem;
   margin-bottom: .5rem;
+}
+.artist-header .info nav.header{
+  margin: 10px;
+}
+.artist-header .info nav.header i{
+  margin: 2px;
 }
 /* End Header */
 
