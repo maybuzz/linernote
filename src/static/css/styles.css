@@ -289,6 +289,7 @@ svg > path{
   position: absolute;
   height: 70%;
   bottom: 0; 
+  z-index: 1000010;
 }
 .artist-header-list {
   text-align: center;
@@ -303,7 +304,7 @@ svg > path{
 }
 .artist-header nav.header{
   position: absolute;
-  z-index: 100000;
+  z-index: 2000002;
   color: white;
   bottom: 0;
   margin: auto;
@@ -327,11 +328,11 @@ svg > path{
   position: absolute;
   top:0;
   left:0;
-  z-index: 1000000;
+  z-index: 2000000;
 }
 .click-right-overlay{
   width: 20%;
-  z-index: 1000000;
+  z-index: 2000000;
   height: 100%;
   position: absolute;
   top:0;
@@ -345,19 +346,23 @@ svg > path{
 
 .header-section.bio{
   color: white;
-  width: 60%;
+  width: 100%;
   margin: auto;
   font-size: 15px;
   line-height: 20px;
   text-align: center;
-  bottom: 20%;
   background: rgba(0,0,0,0.7);
   left: 0;
-  right: 0;
+  height: 100%;
   position: absolute;
+  bottom: 0;
+}
+.header-section.bio p{
+  width: 60%;
+  margin: auto;
 }
 .header-section.visible{
-  z-index: 1000;
+  z-index: 1000003;
   opacity: 1;
 }
 

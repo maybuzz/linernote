@@ -32,6 +32,17 @@ function setHeaderPage(){
 
     activeI.forEach(p=>p.classList.remove('visible'))
     activeI[headerIndex].classList.add('visible')
+    setBottomShadow()
+}
+
+function setBottomShadow (){
+    const shadow = document.querySelector('.bottom-shadow')
+    if(headerIndex===0){
+        shadow.removeAttribute('style')
+    }
+    else{
+        shadow.style.height = '20%'
+    }
 }
 
 
