@@ -68,12 +68,14 @@ router.get('/artist/:id', async (req, res) => {
   const artist_ticketMaster = await getData(attraction_url)
   const filterOUt           = artist_ticketMaster._embedded.attractions.filter(item=>item.name.trim().toLowerCase()===data.name.trim().toLowerCase())
   const ticketResults       = filterOUt[0] ? filterOUt[0] : filterOUt
-
+  
   const events_url          = `https://app.ticketmaster.com/discovery/v2/events.json?attractionId=${ticketResults.id}&countryCode=NL&apikey=${process.env.TICKETMASTER_CONSUMER_KEY}`
   const artist_events       = await (await getData(events_url))._embedded
   const albums              = await (await getDataWithToken(config_albums)).items
   const related             = await getDataWithToken(config_related)
   const topTracks           = await getDataWithToken(config_topTracks)
+  
+
   
   const musicbrainzId = await findArtistId(data.name)
   const relatedMedia  = await getRelatedLinks(musicbrainzId.artists[0].id)
@@ -95,7 +97,7 @@ router.get('/artist/:id', async (req, res) => {
   tempArray = typesArray
   const wikiData            = await getWikiData(data.name, typesArray)
   
-  // res.send({topTracks, albums, artist_ticketMaster, ticketResults, artist_events, related, wikiData})
+  res.send({topTracks, albums, artist_ticketMaster, ticketResults, artist_events, related, wikiData, typesArray})
 
   // NOTE: ER IS EEN NIEUWE EN MAKKELIJKERE MANIER OM DATA UIT YOUTUBE TE HALEN BEKIJK DE CODE IN DE ROUTER >>>'/artist/:id/youtube'
   req.session.artist = {
@@ -103,13 +105,13 @@ router.get('/artist/:id', async (req, res) => {
     youtube: 'iets' 
   }
   // console.log(req.session.artist)
-  res.render('artist', {
-    data: data, 
-    related: related, 
-    albums: albums,
-    topTracks: topTracks.tracks,
-    wikiData 
-  })
+  // res.render('artist', {
+  //   data: data, 
+  //   related: related, 
+  //   albums: albums,
+  //   topTracks: topTracks.tracks,
+  //   wikiData 
+  // })
 })
 
 function arrayOrNot(someVar){
