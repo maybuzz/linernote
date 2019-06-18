@@ -43,7 +43,7 @@ router.get('/artist', async (req, res) => {
 router.get('/artist/:id', async (req, res) => {
   const searchVal = req.params.id
   const acces_token = req.session.acces_token
-  // console.log(acces_token);
+  
   const config = {
     url: `https://api.spotify.com/v1/artists/${searchVal}`,
     acces_token
@@ -66,20 +66,17 @@ router.get('/artist/:id', async (req, res) => {
 
   const events_url    = `https://app.ticketmaster.com/discovery/v2/attractions.json?keyword=${filterOutChar(data.name)}&countryCode=NL&apikey=${process.env.TICKETMASTER_CONSUMER_KEY}`
   const events        = await getData(events_url)
-  const related = await getDataWithToken(config_related)
-  const albums = await getDataWithToken(config_albums)
-  const topTracks = await getDataWithToken(config_topTracks)
+  const related       = await getDataWithToken(config_related)
+  const albums        = await getDataWithToken(config_albums)
+  const topTracks     = await getDataWithToken(config_topTracks)
 
 
 
 
   const filterOUt = events._embedded.attractions.filter(item=>item.name.trim().toLowerCase()===data.name.trim().toLowerCase())
   const ticketResults = filterOUt[0] ? filterOUt[0] : filterOUt
-  // console.log(ticketResults)
   const musicbrainzId = await findArtistId(data.name)
-  // console.log(musicbrainzId)
   const relatedMedia  = await getRelatedLinks(musicbrainzId.artists[0].id)
-  // console.log(relatedMedia)
   
   const uniqueTypes = [...new Set(relatedMedia.map(item => item.type))];
   const typesArray = uniqueTypes
@@ -91,31 +88,14 @@ router.get('/artist/:id', async (req, res) => {
   typesArray.forEach(type=>{
     relatedMedia.forEach(media=>{
       if(removeALlSpaces(media.type) === Object.keys(type)[0]){
-        // console.log(type) 
         type[Object.keys(type)[0]].push(media)
-        // typesArray.push(type)
-        // console.log('pushing')
       }
     })
-    // console.log(Object.keys(type)[0])
   })
   tempArray = typesArray
   
-  const wikiUrl1 = typesArray
-  .filter(t=>Object.keys(t)[0]==='wikipedia')
-  const wikiUrl2 = await (await fetch(`https://en.wikipedia.org/api/rest_v1/page/summary/${data.name}`)).json()
-  let wikiData = null
-  console.log(wikiUrl1.length)
-  if(wikiUrl1.length===0){
-    wikiData = wikiUrl2.extract
-  }else{
-    const url = wikiUrl1[0].wikipedia[0].url.resource.split('https://en.wikipedia.org/wiki/')[1]
-    wikiData =  await (await fetch(`https://en.wikipedia.org/api/rest_v1/page/summary/${url}`)).json()
-    wikiData = wikiData.extract
-  }
-  // res.send(wikiData)
-  // const wikiDataUrl = wikiUrl1[0].wikipedia[0].url.resource ? wikiUrl1 : wikiUrl2 
-  console.log(wikiData) 
+  res.send(tempArray)
+
   // NOTE: ER IS EEN NIEUWE EN MAKKELIJKERE MANIER OM DATA UIT YOUTUBE TE HALEN BEKIJK DE CODE IN DE ROUTER >>>'/artist/:id/youtube'
   req.session.artist = {
     name: data.name,
@@ -140,24 +120,19 @@ function arrayOrNot(someVar){
 }
 
 router.get('/artist/:id/youtube', async (req,res)=>{
-  // const scrape = await scrapeVideos(req.session.artist.youtube)
   const yt = new Youtube()
   yt.setKey("AIzaSyBeiiNR-feYHP2uC90LKZWVFlGx7IQ9ztE")
   yt.search(req.session.artist.name,10,(err,response) => {
     const data = response.items
       .filter(i=>i.id.videoId)
       .map(i=>i.id.videoId)
-    // console.log(data)
     res.render('artist-media-partials/youtube', {data})
   });
 })
 
 
 router.get('/artist/:id/soundcloud', async (req,res)=>{
-  console.log(tempArray)
   tempArray.forEach(item=>{
-    // console.log(item)
-    // console.log(Object.keys(item))
     if(Object.keys(item)[0]==='soundcloud'){
       const url = item[Object.keys(item)[0]][0].url.resource
       res.render('artist-media-partials/soundcloud', {url})
@@ -166,21 +141,12 @@ router.get('/artist/:id/soundcloud', async (req,res)=>{
 })
 
 router.get('/artist/:id/instagram', (req,res)=>{
-  // console.log(tempArray)
   tempArray.forEach(async (item)=>{
-    // console.log(item)
-    // console.log(Object.keys(item))
     if(Object.keys(item)[0]==='socialnetwork'){
-      // console.log(item)
       const url = item.socialnetwork
         .filter(i=>i.url.resource.includes('instagram'))
         .map(x=>x.url.resource)[0]
       const links = await instaScraper(url)
-      // links.forEach(async (link)=>{
-      //   const api = await fetch(`https://api.instagram.com/oembed/?url=${link}`)
-      //   const json = await api.json()
-      //   console.log(json)
-      // }) 
       const getEmbed = links.map(async(link)=>{
         const api = await fetch(`https://api.instagram.com/oembed/?url=${link}`)
         const json = await api.json()
@@ -192,30 +158,39 @@ router.get('/artist/:id/instagram', (req,res)=>{
   })
 })
 
+async function getWikiData(name){
+  const wikiUrl1 = typesArray
+  .filter(t=>Object.keys(t)[0]==='wikipedia')
+  const wikiUrl2 = await (await fetch(`https://en.wikipedia.org/api/rest_v1/page/summary/${name}`)).json()
+  let wikiData = null
+  if(wikiUrl1.length===0){
+    wikiData = wikiUrl2.extract
+  }else{
+    const url = wikiUrl1[0].wikipedia[0].url.resource.split('https://en.wikipedia.org/wiki/')[1]
+    wikiData =  await (await fetch(`https://en.wikipedia.org/api/rest_v1/page/summary/${url}`)).json()
+    wikiData = wikiData.extract
+  }
+  return wikiData
+}
+
+
 
 
 // findArtistId('Michael Jackson')
 // Info from musicBrainnnzzzz
 async function findArtistId(artist){
-  // console.log(artist)
   const url = `http://musicbrainz.org/ws/2/artist/?query=artist:${artist}&fmt=json`
   const data = await getData(url)
   return data
 }
 
 async function musicBrainzAPI(id){
-  // const nirvana = '5b11f4ce-a62d-471e-81fc-a69a8278c7da'
   const url = `http://musicbrainz.org/ws/2/artist/${id}?inc=url-rels&fmt=json`
   const data = await getData(url)
   return data
 }
 
 async function getRelatedLinks(id){
-  // const artistId = await findArtistId(artist)
-  // console.log(artistId)
-  // const getSpecifik = artistId.artists
-  //   .filter(d=>d.name === artist)
-  // const id = getSpecifik[0].id
   const getLinks = await musicBrainzAPI(id)
   return getLinks.relations
 }
@@ -231,8 +206,6 @@ async function scrapeVideos(url){
       .map(el=>el.href)
       .filter(el=>el.includes("watch?"))
       .filter(el=>!el.includes("list"))
-      // .filter(onlyUnique)
-
     return links
   })
   await browser.close()
