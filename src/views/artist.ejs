@@ -60,18 +60,17 @@
         <% include partials/related.ejs %>
       </li>
     </ul>
-    <% include partials/artist-nav.ejs %>
+    <!-- <% include partials/artist-nav.ejs %> -->
   </section>
-  <main class="artist-main">
-
-    <% include partials/artist-playlists.ejs %>
-
-    <% include partials/artist-ticketmaster.ejs %>
-
-    <% include partials/artist-soundcloud.ejs %>
-
+  <main id="feed">
+    <% youtube.forEach((yt)=>{ %>
+      <iframe 
+        src="https://www.youtube.com/embed/<%=yt.id%>"
+        data-date=<%=yt.date%>
+      >
+      </iframe>
+    <% }) %>
   </main>
-
   <% include partials/main-nav.ejs %>
   <script src="/js/script.js"></script>
 </body>

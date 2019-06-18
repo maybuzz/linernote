@@ -97,21 +97,36 @@ router.get('/artist/:id', async (req, res) => {
   tempArray = typesArray
   const wikiData            = await getWikiData(data.name, typesArray)
   
-  res.send({topTracks, albums, artist_ticketMaster, ticketResults, artist_events, related, wikiData, typesArray})
+  // res.send({topTracks, albums, artist_ticketMaster, ticketResults, artist_events, related, wikiData, typesArray})
 
   // NOTE: ER IS EEN NIEUWE EN MAKKELIJKERE MANIER OM DATA UIT YOUTUBE TE HALEN BEKIJK DE CODE IN DE ROUTER >>>'/artist/:id/youtube'
   req.session.artist = {
     name: data.name,
     youtube: 'iets' 
   }
+  const yt = new Youtube()
+  yt.setKey("AIzaSyBeiiNR-feYHP2uC90LKZWVFlGx7IQ9ztE")
+  yt.search(req.session.artist.name,10,(err,response) => {
+    const youtube = response.items
+      .filter(i=>i.id.videoId)
+      .map(i=>{
+        return {
+          id:i.id.videoId,
+          date: i.snippet.publishedAt
+        }
+      })
+      // res.send(response)
+      res.render('artist', {
+        data: data, 
+        related: related, 
+        albums: albums,
+        topTracks: topTracks.tracks,
+        wikiData,
+        youtube,
+        artist_events 
+      })
+  });
   // console.log(req.session.artist)
-  // res.render('artist', {
-  //   data: data, 
-  //   related: related, 
-  //   albums: albums,
-  //   topTracks: topTracks.tracks,
-  //   wikiData 
-  // })
 })
 
 function arrayOrNot(someVar){
@@ -123,14 +138,6 @@ function arrayOrNot(someVar){
 }
 
 router.get('/artist/:id/youtube', async (req,res)=>{
-  const yt = new Youtube()
-  yt.setKey("AIzaSyBeiiNR-feYHP2uC90LKZWVFlGx7IQ9ztE")
-  yt.search(req.session.artist.name,10,(err,response) => {
-    const data = response.items
-      .filter(i=>i.id.videoId)
-      .map(i=>i.id.videoId)
-    res.render('artist-media-partials/youtube', {data})
-  });
 })
 
 
@@ -176,7 +183,23 @@ async function getWikiData(name, array){
   return wikiData
 }
 
-
+async function instagramData(array){
+  tempArray.forEach(async (item)=>{
+    if(Object.keys(item)[0]==='socialnetwork'){
+      const url = item.socialnetwork
+        .filter(i=>i.url.resource.includes('instagram'))
+        .map(x=>x.url.resource)[0]
+      const links = await instaScraper(url)
+      const getEmbed = links.map(async(link)=>{
+        const api = await fetch(`https://api.instagram.com/oembed/?url=${link}`)
+        const json = await api.json()
+        return json.html
+      })
+      const embeds = await Promise.all(getEmbed) 
+      
+    }
+  })
+}
 
 
 // findArtistId('Michael Jackson')

@@ -2,9 +2,9 @@ let headerIndex = 0;
 
 
 function init(){
-    reformAlbumTitle()
-    document.querySelector('.albums-list').addEventListener('scroll', albumScrollCheck)
-    albumScrollCheck()
+    // reformAlbumTitle()
+    // document.querySelector('.albums-list').addEventListener('scroll', albumScrollCheck)
+    // albumScrollCheck()
     document.querySelectorAll('.navigation a').forEach(anchor=>anchor.addEventListener('click', activateLink))
     setHeaderPage()
     document.querySelector('.click-left-overlay').addEventListener('click', switchHeaderPage)
