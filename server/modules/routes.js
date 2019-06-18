@@ -43,7 +43,7 @@ router.get('/artist', async (req, res) => {
 router.get('/artist/:id', async (req, res) => {
   const searchVal = req.params.id
   const acces_token = req.session.acces_token
-  
+
   const config = {
     url: `https://api.spotify.com/v1/artists/${searchVal}`,
     acces_token
@@ -64,27 +64,27 @@ router.get('/artist/:id', async (req, res) => {
     acces_token
   }
 
-  const events_url    = `https://app.ticketmaster.com/discovery/v2/attractions.json?keyword=${filterOutChar(data.name)}&countryCode=NL&apikey=${process.env.TICKETMASTER_CONSUMER_KEY}`
-  const events        = await getData(events_url)
-  const related       = await getDataWithToken(config_related)
-  const albums        = await getDataWithToken(config_albums)
-  const topTracks     = await getDataWithToken(config_topTracks)
+  const attraction_url      = `https://app.ticketmaster.com/discovery/v2/attractions.json?keyword=${filterOutChar(data.name)}&countryCode=NL&apikey=${process.env.TICKETMASTER_CONSUMER_KEY}`
+  const artist_ticketMaster = await getData(attraction_url)
+  const filterOUt           = artist_ticketMaster._embedded.attractions.filter(item=>item.name.trim().toLowerCase()===data.name.trim().toLowerCase())
+  const ticketResults       = filterOUt[0] ? filterOUt[0] : filterOUt
 
-
-
-
-  const filterOUt = events._embedded.attractions.filter(item=>item.name.trim().toLowerCase()===data.name.trim().toLowerCase())
-  const ticketResults = filterOUt[0] ? filterOUt[0] : filterOUt
+  const events_url          = `https://app.ticketmaster.com/discovery/v2/events.json?attractionId=${ticketResults.id}&countryCode=NL&apikey=${process.env.TICKETMASTER_CONSUMER_KEY}`
+  const artist_events       = await (await getData(events_url))._embedded
+  const albums              = await (await getDataWithToken(config_albums)).items
+  const related             = await getDataWithToken(config_related)
+  const topTracks           = await getDataWithToken(config_topTracks)
+  
   const musicbrainzId = await findArtistId(data.name)
   const relatedMedia  = await getRelatedLinks(musicbrainzId.artists[0].id)
   
   const uniqueTypes = [...new Set(relatedMedia.map(item => item.type))];
   const typesArray = uniqueTypes
-        .map(type=>{
-          return {
-              [removeALlSpaces(type)]:[]
-            }
-        })
+  .map(type=>{
+    return {
+      [removeALlSpaces(type)]:[]
+    }
+  })
   typesArray.forEach(type=>{
     relatedMedia.forEach(media=>{
       if(removeALlSpaces(media.type) === Object.keys(type)[0]){
@@ -93,8 +93,9 @@ router.get('/artist/:id', async (req, res) => {
     })
   })
   tempArray = typesArray
+  const wikiData            = await getWikiData(data.name, typesArray)
   
-  res.send(tempArray)
+  // res.send({topTracks, albums, artist_ticketMaster, ticketResults, artist_events, related, wikiData})
 
   // NOTE: ER IS EEN NIEUWE EN MAKKELIJKERE MANIER OM DATA UIT YOUTUBE TE HALEN BEKIJK DE CODE IN DE ROUTER >>>'/artist/:id/youtube'
   req.session.artist = {
@@ -105,7 +106,7 @@ router.get('/artist/:id', async (req, res) => {
   res.render('artist', {
     data: data, 
     related: related, 
-    albums: albums.items,
+    albums: albums,
     topTracks: topTracks.tracks,
     wikiData 
   })
@@ -158,8 +159,8 @@ router.get('/artist/:id/instagram', (req,res)=>{
   })
 })
 
-async function getWikiData(name){
-  const wikiUrl1 = typesArray
+async function getWikiData(name, array){
+  const wikiUrl1 = array
   .filter(t=>Object.keys(t)[0]==='wikipedia')
   const wikiUrl2 = await (await fetch(`https://en.wikipedia.org/api/rest_v1/page/summary/${name}`)).json()
   let wikiData = null
