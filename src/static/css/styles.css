@@ -288,7 +288,7 @@ svg > path{
   width: 100%;
   position: absolute;
   height: 70%;
-  bottom: 0; 
+  bottom: -1%; 
   z-index: 1000010;
 }
 .artist-header-list {
