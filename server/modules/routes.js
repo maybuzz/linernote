@@ -106,7 +106,7 @@ router.get('/artist/:id', async (req, res) => {
 	const wikiData            = await getWikiData(data.name, typesArray)
 
 	// Instagram Data
-	const instagramMeta       = getSocialurl(typesArray,'instagram')
+	const instagramMeta       = getSocialurl(typesArray,'instagram').slice('https://twitter.com/')[1]
 	const instaData 	      = await getInstaEmbeds(instagramMeta)
 	const instagram			  = []
 	for(let insta of instaData){
