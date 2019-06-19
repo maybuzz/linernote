@@ -44,17 +44,15 @@ router.get('/artist/:id', async (req, res) => {
 	const searchVal = req.params.id
 	const acces_token = req.session.acces_token
 
+	// All the configurations for the spotify Calls
 	const config = {
 		url: `https://api.spotify.com/v1/artists/${searchVal}`,
 		acces_token
 	}
-	const data = await getDataWithToken(config)
-
 	const config_related = {
 		url: `https://api.spotify.com/v1/artists/${searchVal}/related-artists`,
 		acces_token
 	}
-			
 	const config_albums = {
 		url: `https://api.spotify.com/v1/artists/${searchVal}/albums?include_groups=album`,
 		acces_token
@@ -63,9 +61,15 @@ router.get('/artist/:id', async (req, res) => {
 		url: `https://api.spotify.com/v1/artists/${data.id}/top-tracks?country=NL`,
 		acces_token
 	}
+	
+	// Get the general data of a an artist in via the Spotify api
+	const data = await getDataWithToken(config)
+
+	// Get realted links via musicbrainz
 	const musicbrainzId = await findArtistId(data.name)
 	const relatedMedia  = await getRelatedLinks(musicbrainzId.artists[0].id)
 	
+	// Make for each type of relatedmedia their own object
 	const uniqueTypes = [...new Set(relatedMedia.map(item => item.type))];
 	const typesArray = uniqueTypes
 		.map(type=>{
@@ -82,18 +86,22 @@ router.get('/artist/:id', async (req, res) => {
 		})
 	tempArray = typesArray
 
+	// Get artist id from ticketmaster
 	const attraction_url      = `https://app.ticketmaster.com/discovery/v2/attractions.json?keyword=${filterOutChar(data.name)}&countryCode=NL&apikey=${process.env.TICKETMASTER_CONSUMER_KEY}`
 	const artist_ticketMaster = await getData(attraction_url)
 	const filterOUt           = artist_ticketMaster._embedded.attractions.filter(item=>item.name.trim().toLowerCase()===data.name.trim().toLowerCase())
 	const ticketResults       = filterOUt[0] ? filterOUt[0] : filterOUt
 	
+	// Events from a specifc artist from ticketmaster api
 	const events_url          = `https://app.ticketmaster.com/discovery/v2/events.json?attractionId=${ticketResults.id}&countryCode=NL&apikey=${process.env.TICKETMASTER_CONSUMER_KEY}`
 	const artist_events       = await (await getData(events_url))._embedded
+
+	// Spotfy data from spotify api
 	const albums              = await (await getDataWithToken(config_albums)).items
 	const related             = await getDataWithToken(config_related)
 	const topTracks           = await getDataWithToken(config_topTracks)
 	
-
+	// Wikipedia data
 	const wikiData            = await getWikiData(data.name, typesArray)
 
 	// Instagram Data
@@ -115,6 +123,7 @@ router.get('/artist/:id', async (req, res) => {
 	// In the client type the next lines in your console:
 	// const data = JSON.parse(document.body.innerText)
 	// data
+	// ___________________________________________________
 	// res.send({topTracks, albums, artist_ticketMaster, ticketResults, artist_events, related, wikiData, typesArray, instagram, instaData})
 
 	// NOTE: ER IS EEN NIEUWE EN MAKKELIJKERE MANIER OM DATA UIT YOUTUBE TE HALEN BEKIJK DE CODE IN DE ROUTER >>>'/artist/:id/youtube'
