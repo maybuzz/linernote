@@ -7,6 +7,7 @@ const {filterOutChar}         = require('./helper')
 const {onlyUnique}            = require('./helper')
 const {removeALlSpaces}       = require('./helper')
 const fetch                   = require('node-fetch')
+const Twitter				  = require('twitter')
 let tempArray                 = null
 const puppeteer = require('puppeteer');
 router.get('/', (req,res)=>{
@@ -105,7 +106,7 @@ router.get('/artist/:id', async (req, res) => {
 	const wikiData            = await getWikiData(data.name, typesArray)
 
 	// Instagram Data
-	const instagramMeta       = instagramUrl(typesArray,'instagram')
+	const instagramMeta       = getSocialurl(typesArray,'instagram')
 	const instaData 	      = await getInstaEmbeds(instagramMeta)
 	const instagram			  = []
 	for(let insta of instaData){
@@ -117,6 +118,16 @@ router.get('/artist/:id', async (req, res) => {
 		instagram.push(instaObj)
 	}
 	
+	// Twitter Data
+	const twitterMeta 		   = getSocialurl(typesArray, 'twitter')
+	const twitterApi 		   = new Twitter({
+		consumer_key: process.env.TWITTER_API_KEY,
+		consumer_secret: process.env.TWITTER_API_SECRET,
+		access_token_key: process.env.TWITTER_ACCES_TOKEN,
+		access_token_secret: process.env.TWITTER_ACCES_TOKEN_SECRET
+	})
+	const twitterData		   = await twitterApi.get('/statuses/user_timeline.json', { screen_name: twitterMeta.username, count: 1 })
+
 	// How to test the data?
 	// Uncomment the res.send line below
 	// THe data will be send tot the client
@@ -124,7 +135,20 @@ router.get('/artist/:id', async (req, res) => {
 	// const data = JSON.parse(document.body.innerText)
 	// data
 	// ___________________________________________________
-	// res.send({topTracks, albums, artist_ticketMaster, ticketResults, artist_events, related, wikiData, typesArray, instagram, instaData})
+	res.send({
+		topTracks, 
+		albums, 
+		artist_ticketMaster, 
+		ticketResults, 
+		artist_events, 
+		related, 
+		wikiData, 
+		typesArray, 
+		instagram, 
+		instaData,
+		twitterMeta,
+		twitterData
+	})
 
 	// NOTE: ER IS EEN NIEUWE EN MAKKELIJKERE MANIER OM DATA UIT YOUTUBE TE HALEN BEKIJK DE CODE IN DE ROUTER >>>'/artist/:id/youtube'
 	req.session.artist = {
@@ -144,16 +168,16 @@ router.get('/artist/:id', async (req, res) => {
 			}
 		})
 		// res.send(response)
-		res.render('artist', {
-		  data: data, 
-		  related: related, 
-		  albums: albums,
-		  topTracks: topTracks.tracks,
-		  wikiData,
-		  youtube,
-		  artist_events,
-		  instagram
-		})
+		// res.render('artist', {
+		//   data: data, 
+		//   related: related, 
+		//   albums: albums,
+		//   topTracks: topTracks.tracks,
+		//   wikiData,
+		//   youtube,
+		//   artist_events,
+		//   instagram
+		// })
 	});
 	// console.log(req.session.artist)
 })
@@ -229,7 +253,7 @@ async function getWikiData(name, array){
 //   })
 // }
 
-function instagramUrl(array, social){
+function getSocialurl(array, social){
 	const socialnetworks = array.filter(item=>{
 		if(Object.keys(item)[0]==='socialnetwork'){
 		return item
