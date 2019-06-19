@@ -69,7 +69,10 @@
         data-date=<%=yt.date%>
       >
       </iframe>
-    <% }) %>
+      <% }) %>
+      <% instagram.forEach((insta)=>{ %>
+        <%-insta.html%>
+      <% }) %>
   </main>
   <% include partials/main-nav.ejs %>
   <script src="/js/script.js"></script>
