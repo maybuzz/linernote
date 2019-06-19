@@ -57,13 +57,13 @@ router.get('/artist/:id', async (req, res) => {
 		url: `https://api.spotify.com/v1/artists/${searchVal}/albums?include_groups=album`,
 		acces_token
 	}
+	
+	// Get the general data of a an artist in via the Spotify api
+	const data = await getDataWithToken(config)
 	const config_topTracks = {
 		url: `https://api.spotify.com/v1/artists/${data.id}/top-tracks?country=NL`,
 		acces_token
 	}
-	
-	// Get the general data of a an artist in via the Spotify api
-	const data = await getDataWithToken(config)
 
 	// Get realted links via musicbrainz
 	const musicbrainzId = await findArtistId(data.name)
@@ -131,6 +131,7 @@ router.get('/artist/:id', async (req, res) => {
 		name: data.name,
 		youtube: 'iets' 
 	}
+	// Youtube 
 	const yt = new Youtube()
 	yt.setKey("AIzaSyBeiiNR-feYHP2uC90LKZWVFlGx7IQ9ztE")
 	yt.search(req.session.artist.name,10,(err,response) => {
