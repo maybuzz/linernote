@@ -204,12 +204,12 @@ svg > path{
   height: 50vh;
   position: relative;
 }
-.artist-header i{
+.artist-header i.fas.fa-chevron-left{
   font-size: 25px;
   position: absolute;
   left: 5%;
   top: 5%;
-  z-index: 1000;
+  z-index: 5000000;
   color: white;
 }
 .artist-header-img {
@@ -222,8 +222,52 @@ svg > path{
 }
 .artist-profile-image .image-container{
   width: 100%;
-    height: 100%;
-    position: absolute;
+  height: 100%;
+  position: absolute;
+}
+
+.artist-profile-image .top-tracks-container{
+  padding-top: 15%;
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  background: rgba(0,0,0,0.7);
+}
+
+.artist-profile-image .top-tracks-container h2{
+  text-align: center;
+  margin-bottom: 20px;
+}
+.artist-profile-image .top-tracks-container ul{
+  max-height: 58%;
+  overflow: hidden;
+}
+.artist-profile-image .top-tracks-container ul li{
+  display: flex;
+  width: 100%;
+  margin: 10px;
+  color: rgba(255,255,255,.5);
+}
+.artist-profile-image .top-tracks-container ul li p{
+  font-size: 17px;
+}
+.artist-profile-image .top-tracks-container ul li p.song{
+  color: white;
+  width: 85%;
+  text-align: left;
+  padding-left: 5%;
+}
+
+.artist-profile-image .top-tracks-container ul li .moreInfo{
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+  font-size: 5px;
+}
+
+.artist-profile-image .top-tracks-container ul li .moreInfo i{
+  margin: 2px;
 }
 
 .artist-header .info{
@@ -243,8 +287,9 @@ svg > path{
   background-image: linear-gradient(transparent, var(--main-bg-color));
   width: 100%;
   position: absolute;
-  height: 25%;
-  bottom: 0; 
+  height: 70%;
+  bottom: -1%; 
+  z-index: 1000010;
 }
 .artist-header-list {
   text-align: center;
@@ -257,6 +302,79 @@ svg > path{
   margin: 0 2.5rem;
   margin-bottom: .5rem;
 }
+.artist-header nav.header{
+  position: absolute;
+  z-index: 2000002;
+  color: white;
+  bottom: 0;
+  margin: auto;
+  left: 0;
+  right: 0;
+  text-align: center;
+}
+.artist-header nav.header i{
+  margin: 2px;
+  font-size: 12px;
+  opacity: .1;
+  transition: .25s;
+}
+
+.artist-header nav.header i.visible{
+  opacity: 1;
+}
+.click-left-overlay{
+  width: 20%;
+  height: 100%;
+  position: absolute;
+  top:0;
+  left:0;
+  z-index: 2000000;
+}
+.click-right-overlay{
+  width: 20%;
+  z-index: 2000000;
+  height: 100%;
+  position: absolute;
+  top:0;
+  right:0;
+}
+.header-section{
+  z-index: 1;
+  opacity: 0;
+  transition: .25s;
+}
+
+.header-section.bio{
+  color: white;
+  width: 100%;
+  margin: auto;
+  font-size: 15px;
+  line-height: 20px;
+  text-align: center;
+  background: rgba(0,0,0,0.7);
+  left: 0;
+  height: 100%;
+  position: absolute;
+  bottom: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column; 
+}
+.header-section.bio p{
+  width: 60%;
+  margin: auto;
+}
+.header-section.visible{
+  z-index: 1000005;
+  opacity: 1;
+}
+.header-section.info.visible{
+  z-index: 1000015;
+}
+
+
+
 /* End Header */
 
 
@@ -308,8 +426,8 @@ svg > path{
 }
 
 .related-item-img {
-  height: 4.5rem;
-  width: 4.5rem;
+  height: 5.8rem;
+  width: 5.8rem;
   border-radius: 100px;
   border: solid 1px var(--color-btn);
   margin-right: .5rem;

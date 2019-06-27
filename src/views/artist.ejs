@@ -6,6 +6,8 @@
 <body>
   <header class="artist-header">
     <i class="fas fa-chevron-left"></i>
+    <div class="click-left-overlay"></div>
+    <div class="click-right-overlay"></div>
     <div class="artist-profile-image">
       <div 
         class="image-container"
@@ -19,10 +21,35 @@
         "
       >
       </div>
-      <div class="info">
+      <div class="header-section info">
         <h1 class="artist-title"><%= data.name %></h1>
         <a class="btn btn-follow" href="#">follow</a>
       </div>
+      <div class="header-section top-tracks-container">
+        <h2>Populair Tracks</h2>
+        <ul>
+          <% topTracks.forEach((tp,index)=>{ %>
+            <li>
+              <p class="index"><%=index+1%>.</p>
+              <p class="song"><%=tp.name%></p>
+              <div class="moreInfo">
+                <i class="fas fa-circle"></i>
+                <i class="fas fa-circle"></i>
+                <i class="fas fa-circle"></i>
+              </div>
+            </li>
+          <% }) %> 
+          
+        </ul>
+      </div>
+      <div class="header-section bio">
+          <p><%=wikiData%></p>
+      </div>
+      <nav class="header">
+        <i class="fas fa-circle"></i>
+        <i class="fas fa-circle"></i>
+        <i class="fas fa-circle"></i>
+      </nav>
       <div class="bottom-shadow"></div>
     </div>
   </header>
@@ -33,18 +60,20 @@
         <% include partials/related.ejs %>
       </li>
     </ul>
-    <% include partials/artist-nav.ejs %>
+    <!-- <% include partials/artist-nav.ejs %> -->
   </section>
-  <main class="artist-main">
-
-    <% include partials/artist-playlists.ejs %>
-
-    <% include partials/artist-ticketmaster.ejs %>
-
-    <% include partials/artist-soundcloud.ejs %>
-
+  <main id="feed">
+    <% youtube.forEach((yt)=>{ %>
+      <iframe 
+        src="https://www.youtube.com/embed/<%=yt.id%>"
+        data-date=<%=yt.date%>
+      >
+      </iframe>
+      <% }) %>
+      <% instagram.forEach((insta)=>{ %>
+        <%-insta.html%>
+      <% }) %>
   </main>
-
   <% include partials/main-nav.ejs %>
   <script src="/js/script.js"></script>
 </body>
